@@ -2,10 +2,45 @@ import './style.css'
 
 import { Todo } from './models/models';
 
-let todoArrayList = []
+let todoArrayList = [
+    new Todo(1, "Finish assignment")
+];
 
 const notDoneList = document.getElementById("notDone");
 const doneList = document.getElementById("done");
+
+const sortOldestBtn = document.getElementById("sortOldBtn");
+const sortNewestBtn = document.getElementById("sortNewBtn");
+
+sortOldestBtn.addEventListener("click", () => {
+    sortTodos("oldest");
+})
+
+sortNewestBtn.addEventListener("click", () => {
+    sortTodos("newest");
+})
+
+function sortTodos(order) {
+    todoArrayList.sort((a,b) => {
+        return order === "newest" ? b.id - a.id : a.id - b.id;
+    });
+
+    renderLists();
+}
+
+function renderLists() {
+    notDoneList.innerHTML = "";
+    doneList.innerHTML = "";
+
+    todoArrayList.forEach(todo => {
+        const listItem = createTodoElement(todo);
+        if (todo.done) {
+            doneList.appendChild(listItem);
+        } else {
+            notDoneList.appendChild(listItem);
+        }
+    });
+}
 
 function addTodo() {
 
@@ -21,8 +56,7 @@ function addTodo() {
             const newTodo = new Todo(Date.now(), todoText);
             todoArrayList.push(newTodo);
 
-            const listItem = createTodoElement(newTodo);
-            notDoneList.appendChild(listItem);
+            renderLists();
 
             textInput.value = "";
 
@@ -34,6 +68,8 @@ function addTodo() {
     
 }
 
+// Skapa HTML-element för en todo
+
 function createTodoElement(todo) {
     const listItem = document.createElement("li");
     listItem.id = todo.id;
@@ -44,8 +80,8 @@ function createTodoElement(todo) {
 
     doneCheckbox.addEventListener("change", () => {
         todo.done = doneCheckbox.checked;
-        moveTodoElement(listItem, todo.done);
-    })
+        moveTodoElement(todo);
+    });
 
     const todoTextNode = document.createTextNode(todo.text);
 
@@ -53,9 +89,12 @@ function createTodoElement(todo) {
     deleteTodo.innerHTML = "x";
     
     deleteTodo.addEventListener("click", () => {
+
+        todoArrayList = todoArrayList.filter(t => t.id !== todo.id);
+
         //Ta bort från DOM
         listItem.remove();
-        todoArrayList = todoArrayList.filter(t => t.id !== todo.id);
+        renderLists();
     })
     
     listItem.appendChild(doneCheckbox);
@@ -65,14 +104,12 @@ function createTodoElement(todo) {
     return listItem;
 }
 
-function moveTodoElement(element, isDone) {
-    if(isDone) {
-        doneList.appendChild(element);
-    } else {
-        notDoneList.appendChild(element);
-    }
+function moveTodoElement(todo) {
+    renderLists();
 }
 
 addTodo();
+
+renderLists();
 
 console.log(todoArrayList);
