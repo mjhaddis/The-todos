@@ -2,6 +2,7 @@ import './style.css'
 
 import { Todo } from './models/models';
 
+
 let todoArrayList = [
     new Todo(1, "Finish assignment")
 ];
@@ -20,9 +21,10 @@ sortNewestBtn.addEventListener("click", () => {
     sortTodos("newest");
 })
 
+// Funktion för att sortera todo-listan
 function sortTodos(order) {
     todoArrayList.sort((a,b) => {
-        return order === "newest" ? b.id - a.id : a.id - b.id;
+        return order === "newest" ? b.id - a.id : a.id - b.id; // Sorterar beroende på vald ordning
     });
 
     renderLists();
@@ -32,8 +34,9 @@ function renderLists() {
     notDoneList.innerHTML = "";
     doneList.innerHTML = "";
 
+// Loopa igenom alla todos och skapa HTML-element för dem
     todoArrayList.forEach(todo => {
-        const listItem = createTodoElement(todo);
+        const listItem = createTodoElement(todo); 
         if (todo.done) {
             doneList.appendChild(listItem);
         } else {
@@ -42,6 +45,7 @@ function renderLists() {
     });
 }
 
+// Funktion för att lägga till en ny todo
 function addTodo() {
 
     const addBtn = document.getElementById("inputBtn");
@@ -80,7 +84,7 @@ function createTodoElement(todo) {
 
     doneCheckbox.addEventListener("change", () => {
         todo.done = doneCheckbox.checked;
-        moveTodoElement(todo);
+        renderLists();
     });
 
     const todoTextNode = document.createTextNode(todo.text);
@@ -94,18 +98,16 @@ function createTodoElement(todo) {
 
         //Ta bort från DOM
         listItem.remove();
+
         renderLists();
     })
     
+      // Lägg till checkbox, text och delete-knapp till listitem
     listItem.appendChild(doneCheckbox);
     listItem.appendChild(todoTextNode);
     listItem.appendChild(deleteTodo)
 
     return listItem;
-}
-
-function moveTodoElement(todo) {
-    renderLists();
 }
 
 addTodo();
